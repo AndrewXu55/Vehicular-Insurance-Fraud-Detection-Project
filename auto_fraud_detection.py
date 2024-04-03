@@ -48,7 +48,7 @@ image_test_non_fraud_directory = image_directory + '/test/Non-Fraud'
 # Iterate over files in directory
 def get_imgs(directory):
     img_list = []
-    for file_name in os.listdir(directory)[:300]:
+    for file_name in os.listdir(directory)[:350]:
         if file_name.endswith('.jpg'):
             # Get full path
             file_path = os.path.join(directory, file_name)
@@ -60,7 +60,7 @@ def get_imgs(directory):
 
 
 # Lists to store images
-train_fraud_images = get_imgs(image_train_fraud_directory)[:75]
+train_fraud_images = get_imgs(image_train_fraud_directory)[:80]
 train_not_fraud_images = get_imgs(image_train_non_fraud_directory)
 test_fraud_images = get_imgs(image_test_fraud_directory)
 test_not_fraud_images = get_imgs(image_test_non_fraud_directory)
@@ -173,8 +173,8 @@ model.compile(optimizer='adam',
               loss='binary_crossentropy',
               metrics=[tf.keras.metrics.Recall(), tf.keras.metrics.Accuracy()])
 
-# Train the model
-model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, verbose=1)
+'''# Train the model
+model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, verbose=1)'''
 
 
 # Define a function to get predicted classes from probabilities based on a threshold
@@ -281,8 +281,8 @@ oversampled_fraud = randomly_oversample(train_fraud_images, 0.5)
 undersampled_non_fraud_ds = to_ds(undersampled_non_fraud, 0)
 oversampled_fraud_ds = to_ds(oversampled_fraud, 1)
 # Randomly resampled train dataset
-randomly_resampled_train_ds = oversampled_fraud_ds.concatenate(undersampled_non_fraud_ds).shuffle(
-    buffer_size=7000).batch(batch_size)
+'''randomly_resampled_train_ds = oversampled_fraud_ds.concatenate(undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)'''
 
 
 # Data Augmentation
@@ -320,10 +320,10 @@ def augment_data(my_dataset, proportion):
     return my_dataset.concatenate(augmented_dataset)
 
 
-# Augmented train dataset
+'''# Augmented train dataset
 augmented_train_fraud_ds = augment_data(train_fraud_ds, .5)
 augmented_train_ds = augmented_train_fraud_ds.concatenate(train_not_fraud_ds).shuffle(buffer_size=7000).batch(
-    batch_size)
+    batch_size)'''
 
 # Data augmentation & randomly resampled dataset
 augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, .5)
@@ -356,16 +356,16 @@ def evaluate_model(model, dataset):
 
     return recall, accuracy
 
-
+'''
 # Train the model with weights to favor correctly predicting fraud (Heavy)
 model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .1, 1: 0.9})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Weighted Model Heavy - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Weighted Model Heavy - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the model with weights to favor correctly predicting fraud (Medium)
+'''# Train the model with weights to favor correctly predicting fraud (Medium)
 model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .2, 1: 0.8})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Weighted Model Medium - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Weighted Model Medium - Recall: {recall}, Accuracy: {accuracy}")'''
 
 '''# Train the model with weights to favor correctly predicting fraud (Light)
 model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .15, 1: 0.55})
@@ -387,37 +387,34 @@ model.fit(smote_enn_train_dataset, batch_size=batch_size, epochs=10, validation_
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"SMOTE-ENN Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the data augmentation & randomly resampled model
+'''# Train the data augmentation & randomly resampled model
 model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset)
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Resampled Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Augmented & Resampled Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the heavy weighted & randomly resampled model
+'''# Train the heavy weighted & randomly resampled model
 model.fit(randomly_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
           class_weight={0: 0.1, 1: 0.9})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Resamples & Heavy Weighted Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Resamples & Heavy Weighted Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Save entire model to a single file
-model.save('fraud_model.h5')
-
-# Train the light weighted & randomly resampled model
+'''# Train the light weighted & randomly resampled model
 model.fit(randomly_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
           class_weight={0: 0.2, 1: 0.8})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Resamples & Light Weighted Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Resamples & Light Weighted Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the data augmentation & heavy weighted model
+'''# Train the data augmentation & heavy weighted model
 model.fit(augmented_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
           class_weight={0: 0.1, 1: 0.9})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Weighted Heavy Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Augmented & Weighted Heavy Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the data augmentation & light weighted model
+'''# Train the data augmentation & light weighted model
 model.fit(augmented_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
           class_weight={0: 0.2, 1: 0.8})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Weighted Light Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Augmented & Weighted Light Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
 # Train the data augmentation, randomly resampled model, with class weights - Heavy
 model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
@@ -425,11 +422,25 @@ model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, valida
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
 
+'''
 # Train the data augmentation, randomly resampled model, with class weights - Light
 model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
           class_weight={0: .25, 1: 0.75})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accuracy: {accuracy}")'''
+
+# Save entire model to a single file
+model.save('fraud_model_single_file.h5')
+
+# Load entire model from a single file
+loaded_single_file_model = tf.keras.models.load_model('my_model.h5')
+
+# Save model in SavedModel format
+tf.saved_model.save(model, 'fraud_model_SMFormat')
+
+# Load model from SavedModel format
+loaded_SM_model = tf.saved_model.load('saved_model')
+
 
 """### Evaluation"""
 # Define a function to get predicted classes from probabilities based on a threshold
