@@ -433,13 +433,13 @@ print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accur
 model.save('fraud_model_single_file.h5')
 
 # Load entire model from a single file
-loaded_single_file_model = tf.keras.models.load_model('my_model.h5')
+loaded_single_file_model = tf.keras.models.load_model('fraud_model_single_file.h5')
 
 # Save model in SavedModel format
 tf.saved_model.save(model, 'fraud_model_SMFormat')
 
 # Load model from SavedModel format
-loaded_SM_model = tf.saved_model.load('saved_model')
+loaded_SM_model = tf.saved_model.load('fraud_model_SMFormat')
 
 
 """### Evaluation"""
