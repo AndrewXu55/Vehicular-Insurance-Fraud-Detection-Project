@@ -330,50 +330,86 @@ def evaluate_model(model, dataset):
     accuracy = accuracy_score(true_labels, predictions)
 
     return recall, accuracy
+
 # Train the model with weights to favor correctly predicting fraud (Heavy)
-model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .15, 1: 0.85})
+model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .1, 1: 0.9})
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Weighted Model Heavy - Recall: {recall}, Accuracy: {accuracy}")
 
 # Train the model with weights to favor correctly predicting fraud (Medium)
-model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .3, 1: 0.7})
+model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .2, 1: 0.8})
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Weighted Model Medium - Recall: {recall}, Accuracy: {accuracy}")
 
-# Train the model with weights to favor correctly predicting fraud (Light)
-model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .45, 1: 0.55})
+'''# Train the model with weights to favor correctly predicting fraud (Light)
+model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .15, 1: 0.55})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Weighted Model Light - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Weighted Model Light - Recall: {recall}, Accuracy: {accuracy}") '''
 
-# Train the data augmentation model
+'''# Train the data augmentation model
 model.fit(augmented_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset)
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Augmented Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the randomly resampled model
+'''# Train the randomly resampled model
 model.fit(randomly_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset)
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Random Resample Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Random Resample Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the SMOTE-ENN model
+'''# Train the SMOTE-ENN model
 model.fit(smote_enn_train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset)
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"SMOTE-ENN Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"SMOTE-ENN Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
 # Train the data augmentation & randomly resampled model
 model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset)
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Resampled Model - Recall: {recall}, Accuracy: {accuracy}")
 
-# Train the data augmentation & weighted resampled model
-model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .35, 1: 0.65})
+# Train the heavy weighted & randomly resampled model
+model.fit(randomly_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
+          class_weight={0: 0.1, 1: 0.9})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Resampled Weighted Model - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Resamples & Heavy Weighted Model - Recall: {recall}, Accuracy: {accuracy}")
 
-# Train the data augmentation, randomly resampled model, with class weights
-model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .3, 1: 0.7})
+# Save entire model to a single file
+model.save('fraud_model.h5')
+
+# Train the light weighted & randomly resampled model
+model.fit(randomly_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
+          class_weight={0: 0.2, 1: 0.8})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Resamples & Light Weighted Model - Recall: {recall}, Accuracy: {accuracy}")
+
+# Train the data augmentation & heavy weighted model
+model.fit(augmented_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
+          class_weight={0: 0.1, 1: 0.9})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Augmented & Weighted Heavy Model - Recall: {recall}, Accuracy: {accuracy}")
+
+# Train the data augmentation & light weighted model
+model.fit(augmented_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
+          class_weight={0: 0.2, 1: 0.8})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Augmented & Weighted Light Model - Recall: {recall}, Accuracy: {accuracy}")
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
+          class_weight={0: .15, 1: 0.85})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+# Train the data augmentation, randomly resampled model, with class weights - Light
+model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
+          class_weight={0: .25, 1: 0.75})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+"""### Evaluation"""
+# Define a function to get predicted classes from probabilities based on a threshold
+
+# Evaluate recall for each model on the testing set
+# Predict probabilities for each model
 
 """### Evaluation"""
 # Define a function to get predicted classes from probabilities based on a threshold
