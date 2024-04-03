@@ -31,7 +31,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from imblearn.combine import SMOTEENN
 
 # Mount google drive and connect to csv
-#drive.mount('/content/gdrive')
+# drive.mount('/content/gdrive')
 
 # Directory containing JPEG images
 image_directory = '/Users/barivadaria/Developer/Code/AI4ALL Bootcamp/Machine Learning Insurance Fraud Project/Test Data/archive'
@@ -40,22 +40,24 @@ image_train_non_fraud_directory = image_directory + '/train/Non-Fraud'
 image_test_fraud_directory = image_directory + '/test/Fraud'
 image_test_non_fraud_directory = image_directory + '/test/Non-Fraud'
 
+
 # Function to get images from directory and put them in list
 # Input Parameters: directory
 # Return list of images
 # Get images in train_non_fraud directory
 # Iterate over files in directory
 def get_imgs(directory):
-  img_list = []
-  for file_name in os.listdir(directory)[:300]:
-    if file_name.endswith('.jpg'):
-      # Get full path
-      file_path = os.path.join(directory, file_name)
-      # Read images
-      img = Image.open(file_path)
-      # Append image to image list
-      img_list.append(img)
-  return img_list
+    img_list = []
+    for file_name in os.listdir(directory)[:300]:
+        if file_name.endswith('.jpg'):
+            # Get full path
+            file_path = os.path.join(directory, file_name)
+            # Read images
+            img = Image.open(file_path)
+            # Append image to image list
+            img_list.append(img)
+    return img_list
+
 
 # Lists to store images
 train_fraud_images = get_imgs(image_train_fraud_directory)[:75]
@@ -69,11 +71,12 @@ total_height = 0
 
 # Iterate over all images totalling the width and height
 for img in (test_fraud_images + train_fraud_images + test_not_fraud_images + train_not_fraud_images):
-  total_height += img.height
-  total_width += img.width
+    total_height += img.height
+    total_width += img.width
 
 # Get mean height and width
-mean_height = total_height / len(test_fraud_images + train_fraud_images + test_not_fraud_images + train_not_fraud_images)
+mean_height = total_height / len(
+    test_fraud_images + train_fraud_images + test_not_fraud_images + train_not_fraud_images)
 mean_width = total_width / len(test_fraud_images + train_fraud_images + test_not_fraud_images + train_not_fraud_images)
 
 # Round width and height to nearest 50
@@ -84,15 +87,17 @@ width = round(mean_width / 50) * 50
 print('Height: ', height)
 print('Width: ', width)
 
+
 # Function to get images from directory and put them in list
 # Input Parameters: directory, height, width
 # Return list of images
 # Get images in train_non_fraud directory
 # Iterate over files in directory
 def resize_imgs(img_list, height, width):
-  resize_tuple = (width, height)
-  for img_counter in range(len(img_list)):
-    img_list[img_counter] = img_list[img_counter].resize(resize_tuple)
+    resize_tuple = (width, height)
+    for img_counter in range(len(img_list)):
+        img_list[img_counter] = img_list[img_counter].resize(resize_tuple)
+
 
 # Lists to store resized images
 resize_imgs(train_fraud_images, height, width)
@@ -100,19 +105,21 @@ resize_imgs(train_not_fraud_images, height, width)
 resize_imgs(test_fraud_images, height, width)
 resize_imgs(test_not_fraud_images, height, width)
 
+
 def to_image_list(imgs):
-  tensor_imgs = []
+    tensor_imgs = []
 
-  for img in imgs:
-    # Convert PIL Image to numpy array
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    for img in imgs:
+        # Convert PIL Image to numpy array
+        img_array = tf.keras.preprocessing.image.img_to_array(img)
 
-    # Normalize pixel values
-    img_array = img_array / 255.0
+        # Normalize pixel values
+        img_array = img_array / 255.0
 
-    tensor_imgs.append(img_array)
+        tensor_imgs.append(img_array)
 
-  return tensor_imgs
+    return tensor_imgs
+
 
 def to_ds(imgs, label):
     tensor_imgs = to_image_list(imgs)
@@ -121,6 +128,7 @@ def to_ds(imgs, label):
     img_dataset = tf.data.Dataset.from_tensor_slices((tensor_imgs, labels))
 
     return img_dataset
+
 
 # Fraud = 1, Not Fraud = 0
 # Convert image arrays to dataframes
@@ -142,7 +150,7 @@ test_dataset = test_dataset.batch(batch_size)
 # Visualize Class Proportions in Training
 num_fraud = tf.data.experimental.cardinality(train_fraud_ds).numpy()
 num_not_fraud = tf.data.experimental.cardinality(train_not_fraud_ds).numpy()
-plt.pie(x = [num_fraud, num_not_fraud], labels = ['Fraud', 'Not-Fraud'], autopct = '%.2f%%')
+plt.pie(x=[num_fraud, num_not_fraud], labels=['Fraud', 'Not-Fraud'], autopct='%.2f%%')
 plt.show()
 # Inference - Major class imbalance with Not-Fraud as the majority and Fraud as the minority
 
@@ -157,7 +165,7 @@ model = models.Sequential([
     layers.Flatten(),
     layers.Dense(64, activation='relu'),
     layers.Dense(32, activation='relu'),
-    layers.Dense(1, activation = 'sigmoid')
+    layers.Dense(1, activation='sigmoid')
 ])
 
 # Compile the model
@@ -166,11 +174,13 @@ model.compile(optimizer='adam',
               metrics=[tf.keras.metrics.Recall(), tf.keras.metrics.Accuracy()])
 
 # Train the model
-model.fit(train_dataset, batch_size = batch_size, epochs=10, validation_data=test_dataset, verbose=1)
+model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, verbose=1)
+
 
 # Define a function to get predicted classes from probabilities based on a threshold
 def get_predicted_classes(probabilities, threshold=0.5):
     return (probabilities > threshold).astype(int)
+
 
 # Evaluate recall for base model
 # Predict probabilities for base model
@@ -185,7 +195,7 @@ for images, labels in test_dataset:
     preds = model.predict(images)
     # Assuming a binary classification with a sigmoid activation at the output layer
     preds = (preds > 0.5).astype(int).flatten()
-    
+
     model_predictions.extend(preds)
     true_labels.extend(labels.numpy())
 
@@ -195,10 +205,10 @@ model_predictions = np.array(model_predictions)
 
 # Now, compute the recall
 recall = recall_score(true_labels, model_predictions)
-print(f'Recall: {recall}')
+print(f'Base Recall: {recall}')
 
 accuracy = accuracy_score(true_labels, model_predictions)
-print(f"Accuracy: {accuracy}")
+print(f"Base Accuracy: {accuracy}")
 
 test_probabilities = model.predict(test_dataset)
 
@@ -210,16 +220,19 @@ test_predictions = get_predicted_classes(test_probabilities)
 #### Functions
 """
 
-#SMOTE ENN
+
+'''# SMOTE ENN
 def flat_array_images(img_list):
     flat_imgs = []
     for img in img_list:
         flat_imgs.append(np.array(img).flatten())
     return np.array(flat_imgs)
 
+
 def create_tf_datasets(x_data, y_data, batch_size):
     dataset = tf.data.Dataset.from_tensor_slices((x_data, y_data))
     return dataset.shuffle(buffer_size=7000).batch(batch_size)
+
 
 def prepare_balanced_dataset(train_fraud_images, train_not_fraud_images, height, width, batch_size=32):
     x_fraud_imgs = flat_array_images(train_fraud_images)
@@ -236,26 +249,31 @@ def prepare_balanced_dataset(train_fraud_images, train_not_fraud_images, height,
     balanced_dataset = create_tf_datasets(x_resampled_imgs, y_resampled, batch_size)
 
     return balanced_dataset
+'''
 
 # Train Smote Dataset
-smote_enn_train_dataset = prepare_balanced_dataset(train_fraud_images, train_not_fraud_images, height, width, batch_size=32)
+'''smote_enn_train_dataset = prepare_balanced_dataset(train_fraud_images, train_not_fraud_images, height, width,
+                                                   batch_size=32)'''
+
 
 # Random Under Sampling
 def randomly_undersample(non_fraud_images, ratio):
-  new_data = []
-  for img in non_fraud_images:
-    if random.random() <= ratio:
-      new_data.append(img)
-  return new_data
+    new_data = []
+    for img in non_fraud_images:
+        if random.random() <= ratio:
+            new_data.append(img)
+    return new_data
+
 
 # Random Over Sampling
 def randomly_oversample(fraud_imgs, ratio):
-  new_data = [img for img in fraud_imgs]
-  for img in fraud_imgs:
-    if random.random() <= ratio:
-      new_data.append(img)
+    new_data = [img for img in fraud_imgs]
+    for img in fraud_imgs:
+        if random.random() <= ratio:
+            new_data.append(img)
 
-  return new_data
+    return new_data
+
 
 # Random Sampling Testing
 undersampled_non_fraud = randomly_undersample(train_not_fraud_images, 0.75)
@@ -263,7 +281,9 @@ oversampled_fraud = randomly_oversample(train_fraud_images, 0.5)
 undersampled_non_fraud_ds = to_ds(undersampled_non_fraud, 0)
 oversampled_fraud_ds = to_ds(oversampled_fraud, 1)
 # Randomly resampled train dataset
-randomly_resampled_train_ds = oversampled_fraud_ds.concatenate(undersampled_non_fraud_ds).shuffle(buffer_size=7000).batch(batch_size)
+randomly_resampled_train_ds = oversampled_fraud_ds.concatenate(undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
 
 # Data Augmentation
 # Provide ranges for different kernels/augmentation methods.
@@ -299,15 +319,20 @@ def augment_data(my_dataset, proportion):
     augmented_dataset = sampled_dataset.map(augment_image)
     return my_dataset.concatenate(augmented_dataset)
 
+
 # Augmented train dataset
 augmented_train_fraud_ds = augment_data(train_fraud_ds, .5)
-augmented_train_ds = augmented_train_fraud_ds.concatenate(train_not_fraud_ds).shuffle(buffer_size=7000).batch(batch_size)
+augmented_train_ds = augmented_train_fraud_ds.concatenate(train_not_fraud_ds).shuffle(buffer_size=7000).batch(
+    batch_size)
 
 # Data augmentation & randomly resampled dataset
 augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, .5)
-augmented_resampled_train_ds = augmented_resampled_train_fraud_ds.concatenate(undersampled_non_fraud_ds).shuffle(buffer_size=7000).batch(batch_size)
+augmented_resampled_train_ds = augmented_resampled_train_fraud_ds.concatenate(undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
 
 """### Training on Preprocessed Datasets"""
+
+
 def evaluate_model(model, dataset):
     true_labels = []
     predictions = []
@@ -316,11 +341,11 @@ def evaluate_model(model, dataset):
     for images, labels in dataset:
         # Predict the probabilities for each image in the batch
         probs = model.predict(images)
-        
+
         # Convert probabilities to binary predictions based on 0.5 threshold
         # This assumes your model outputs probabilities of the positive class (class 1)
         preds = (probs > 0.5).astype(int).flatten()
-        
+
         # Extend the predictions and true_labels lists with the results
         predictions.extend(preds)
         true_labels.extend(labels.numpy().flatten())
@@ -330,6 +355,7 @@ def evaluate_model(model, dataset):
     accuracy = accuracy_score(true_labels, predictions)
 
     return recall, accuracy
+
 
 # Train the model with weights to favor correctly predicting fraud (Heavy)
 model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, class_weight={0: .1, 1: 0.9})
@@ -404,12 +430,6 @@ model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, valida
           class_weight={0: .25, 1: 0.75})
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
-
-"""### Evaluation"""
-# Define a function to get predicted classes from probabilities based on a threshold
-
-# Evaluate recall for each model on the testing set
-# Predict probabilities for each model
 
 """### Evaluation"""
 # Define a function to get predicted classes from probabilities based on a threshold
