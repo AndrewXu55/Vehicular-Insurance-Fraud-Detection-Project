@@ -13,14 +13,15 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    output = ""
+    output = "Stuff"
+    '''
     image = request.form['file']
     if not allowed_file(image.filename):
         output = "Invalid file format, plz use jpg"
     else:
         #do the analysis and prediction and file prep
         output = "it worked well brotha"
-
+    '''
     return render_template('index.html', output=output) 
 
 
