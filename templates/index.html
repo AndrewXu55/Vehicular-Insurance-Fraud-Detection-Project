@@ -10,10 +10,14 @@
     <div id="page">
         <h1 id="title"> AI4ALL Project</h1>
         <h3 id="upload text">Upload file here</h3>
-        <form action="/predict">
-            <input type="file" id="myFile" name="filename">
+        <form method="post" action="/predict" enctype="multipart/form-data">
+            <label for="file">File</label>
+            <input type="file" id="file" name="file" required>
             <input type="submit">
         </form>
+
+        <p class="output">Prediction: {{ output }}</p>
+   
         
     </div>
 </body>
