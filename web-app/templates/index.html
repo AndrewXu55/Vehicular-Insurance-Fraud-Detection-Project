@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Fraud Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/styles.css') }}">
+    <script src="{{url_for('static', filename='scripts/main.js')}}" defer></script>
+</head>
+
+
+<body>
+    <div id="page">
+        <div id="title" class="inter-800">Vehicular Insurance Fraud Detector</div>
+        <div id="centerModule">
+            <div id="leftSide" class="box">
+                <p id="uploadText" class="header inter-700">Upload File Here</p>
+
+                <form id="submission" method="post" action="/predict" enctype="multipart/form-data">
+                    <div class="fileInput">
+                        <input type="file" id="file" name="file" required>
+                    </div>
+
+                    <button id="uploadBtn" type="button" onclick="chooseFile();">
+                        <img id="uploadImg" src="../static/images/thin-upload-btn.png" alt="upload button" width="150px"
+                            height="150px" />
+
+                        
+                    </button>
+
+                    <p id="fileName" class="inter-300">Browse Files</p>
+
+                    
+
+                    <input id="submitBtn" class="inter-600" type="submit">
+                </form>
+
+                <p id="uploadExplain" class="txt inter-400">
+                    Please ensure that the images are in JPG format and of vehicular damage
+                </p>
+            </div>
+            <div id="rightSide" class="box">
+                <p id="predictionHeader" class="header inter-700">Prediction:</p>
+
+                <p id="predictionOutput" class="inter-500">{{output}}</p>
+                <p id="predictionProb" class="txt inter-400">
+                    Probability of Being Correct: {{prediction}}
+                </p>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
