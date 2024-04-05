@@ -452,7 +452,7 @@ tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.conc
 
 # Train the data augmentation, randomly resampled model, with class weights - Heavy
 model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=15, validation_data=test_dataset,
-          shuffle=True, class_weight={0: .15, 1: 0.85})
+          shuffle=True, class_weight={0: .1, 1: 0.9})
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
 
