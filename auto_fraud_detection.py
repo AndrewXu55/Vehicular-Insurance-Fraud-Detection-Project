@@ -48,7 +48,7 @@ image_test_non_fraud_directory = image_directory + '/test/Non-Fraud'
 # Iterate over files in directory
 def get_imgs(directory):
     img_list = []
-    for file_name in os.listdir(directory)[:350]:
+    for file_name in os.listdir(directory):
         if file_name.endswith('.jpg'):
             # Get full path
             file_path = os.path.join(directory, file_name)
@@ -60,7 +60,7 @@ def get_imgs(directory):
 
 
 # Lists to store images
-train_fraud_images = get_imgs(image_train_fraud_directory)[:80]
+train_fraud_images = get_imgs(image_train_fraud_directory)
 train_not_fraud_images = get_imgs(image_train_non_fraud_directory)
 test_fraud_images = get_imgs(image_test_fraud_directory)
 test_not_fraud_images = get_imgs(image_test_non_fraud_directory)
@@ -143,7 +143,7 @@ train_dataset = train_fraud_ds.concatenate(train_not_fraud_ds).shuffle(buffer_si
 test_dataset = test_fraud_ds.concatenate(test_not_fraud_ds).shuffle(buffer_size=7000)
 
 # Batch the datasets
-batch_size = 32
+batch_size = 64
 train_dataset = train_dataset.batch(batch_size)
 test_dataset = test_dataset.batch(batch_size)
 
@@ -163,6 +163,7 @@ model = models.Sequential([
     layers.Conv2D(64, (3, 3)),
     layers.MaxPooling2D((2, 2)),
     layers.Flatten(),
+    layers.Dense(64, activation='relu'),
     layers.Dense(64, activation='relu'),
     layers.Dense(32, activation='relu'),
     layers.Dense(1, activation='sigmoid')
@@ -416,11 +417,11 @@ model.fit(augmented_train_ds, batch_size=batch_size, epochs=10, validation_data=
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Weighted Light Model - Recall: {recall}, Accuracy: {accuracy}")'''
 
-# Train the data augmentation, randomly resampled model, with class weights - Heavy
+'''# Train the data augmentation, randomly resampled model, with class weights - Heavy
 model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, validation_data=test_dataset,
           class_weight={0: .15, 1: 0.85})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")'''
 
 '''
 # Train the data augmentation, randomly resampled model, with class weights - Light
@@ -429,6 +430,33 @@ model.fit(augmented_resampled_train_ds, batch_size=batch_size, epochs=10, valida
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accuracy: {accuracy}")'''
 
+
+'''### Tune Final Dataset + Model'''
+
+# Dataset alteration hyperparameters
+under_proportion = .75
+over_proportion = .5
+augment_proportion = .5
+
+
+# Random Sampling Testing
+tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+
+# Data augmentation on randomly resampled dataset
+tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=15, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .15, 1: 0.85})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+'''###Save Model'''
 # Save entire model to a single file
 model.save('fraud_model_single_file.h5')
 
@@ -440,7 +468,6 @@ tf.saved_model.save(model, 'fraud_model_SMFormat')
 
 # Load model from SavedModel format
 loaded_SM_model = tf.saved_model.load('fraud_model_SMFormat')
-
 
 """### Evaluation"""
 # Define a function to get predicted classes from probabilities based on a threshold
