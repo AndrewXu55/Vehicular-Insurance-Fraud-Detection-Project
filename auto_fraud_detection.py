@@ -48,7 +48,7 @@ image_test_non_fraud_directory = image_directory + '/test/Non-Fraud'
 # Iterate over files in directory
 def get_imgs(directory):
     img_list = []
-    for file_name in os.listdir(directory)[:1250]:
+    for file_name in os.listdir(directory)[:1500]:
         if file_name.endswith('.jpg'):
             # Get full path
             file_path = os.path.join(directory, file_name)
@@ -175,7 +175,7 @@ model.compile(optimizer='adam',
               metrics=[tf.keras.metrics.Recall(), tf.keras.metrics.Accuracy()])
 
 '''# Train the model
-model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, verbose=1)'''
+# model.fit(train_dataset, batch_size=batch_size, epochs=10, validation_data=test_dataset, verbose=1)'''
 
 
 # Define a function to get predicted classes from probabilities based on a threshold
@@ -201,20 +201,20 @@ for images, labels in test_dataset:
     true_labels.extend(labels.numpy())
 
 # Convert lists to numpy arrays for metrics calculation
-true_labels = np.array(true_labels)
-model_predictions = np.array(model_predictions)
+# true_labels = np.array(true_labels)
+# model_predictions = np.array(model_predictions)
 
 # Now, compute the recall
-recall = recall_score(true_labels, model_predictions)
-print(f'Base Recall: {recall}')
+# recall = recall_score(true_labels, model_predictions)
+# print(f'Base Recall: {recall}')
 
-accuracy = accuracy_score(true_labels, model_predictions)
-print(f"Base Accuracy: {accuracy}")
+# accuracy = accuracy_score(true_labels, model_predictions)
+# print(f"Base Accuracy: {accuracy}")
 
-test_probabilities = model.predict(test_dataset)
+# test_probabilities = model.predict(test_dataset)
 
 # Get predicted classes for each model using a threshold of 0.5
-test_predictions = get_predicted_classes(test_probabilities)
+# test_predictions = get_predicted_classes(test_probabilities)
 
 """#### Data Alteration to Rectify Imbalanced Data
 
@@ -434,9 +434,9 @@ print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accur
 '''### Tune Final Dataset + Model'''
 
 # Dataset alteration hyperparameters
-under_proportion = .75
-over_proportion = .5
-augment_proportion = .5
+under_proportion = .9
+over_proportion = .25
+augment_proportion = .25
 
 
 # Random Sampling Testing
@@ -452,7 +452,7 @@ tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.conc
 
 # Train the data augmentation, randomly resampled model, with class weights - Heavy
 model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=15, validation_data=test_dataset,
-          shuffle=True, class_weight={0: .25, 1: 0.75})
+          shuffle=True, class_weight={0: .35, 1: 0.65})
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
 
