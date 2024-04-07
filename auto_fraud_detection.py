@@ -48,7 +48,7 @@ image_test_non_fraud_directory = image_directory + '/test/Non-Fraud'
 # Iterate over files in directory
 def get_imgs(directory):
     img_list = []
-    for file_name in os.listdir(directory)[:1600]:
+    for file_name in os.listdir(directory)[:1750]:
         if file_name.endswith('.jpg'):
             # Get full path
             file_path = os.path.join(directory, file_name)
@@ -434,10 +434,147 @@ print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accur
 '''### Tune Final Dataset + Model'''
 
 # Dataset alteration hyperparameters
-under_proportion = .8
+under_proportion = .75
+over_proportion = .25
+augment_proportion = .25
+
+# Random Sampling Testing
+tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+
+# Data augmentation on randomly resampled dataset
+tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .25, 1: 0.75})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+
+# Dataset alteration hyperparameters
+under_proportion = .7
 over_proportion = .3
 augment_proportion = .3
 
+# Random Sampling Testing
+tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+
+# Data augmentation on randomly resampled dataset
+tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .3, 1: 0.7})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+
+# Dataset alteration hyperparameters
+under_proportion = .8
+over_proportion = .2
+augment_proportion = .2
+
+# Random Sampling Testing
+tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+
+# Data augmentation on randomly resampled dataset
+tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .2, 1: 0.8})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+
+# Dataset alteration hyperparameters
+under_proportion = .8
+over_proportion = .35
+augment_proportion = .35
+
+# Random Sampling Testing
+tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+
+# Data augmentation on randomly resampled dataset
+tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .25, 1: 0.75})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+
+# Dataset alteration hyperparameters
+under_proportion = .8
+over_proportion = .25
+augment_proportion = .5
+
+# Random Sampling Testing
+tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+
+# Data augmentation on randomly resampled dataset
+tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .3, 1: 0.7})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+
+# Dataset alteration hyperparameters
+under_proportion = .8
+over_proportion = .5
+augment_proportion = .25
+
+# Random Sampling Testing
+tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+
+# Data augmentation on randomly resampled dataset
+tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+    buffer_size=7000).batch(batch_size)
+
+# Train the data augmentation, randomly resampled model, with class weights - Heavy
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .3, 1: 0.7})
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+
+
+# Dataset alteration hyperparameters
+under_proportion = .7
+over_proportion = .3
+augment_proportion = .3
 
 # Random Sampling Testing
 tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
