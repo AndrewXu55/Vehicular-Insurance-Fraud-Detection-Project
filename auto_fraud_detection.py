@@ -48,7 +48,7 @@ image_test_non_fraud_directory = image_directory + '/test/Non-Fraud'
 # Iterate over files in directory
 def get_imgs(directory):
     img_list = []
-    for file_name in os.listdir(directory)[:1500]:
+    for file_name in os.listdir(directory)[:1600]:
         if file_name.endswith('.jpg'):
             # Get full path
             file_path = os.path.join(directory, file_name)
@@ -434,9 +434,9 @@ print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accur
 '''### Tune Final Dataset + Model'''
 
 # Dataset alteration hyperparameters
-under_proportion = .9
-over_proportion = .25
-augment_proportion = .25
+under_proportion = .8
+over_proportion = .3
+augment_proportion = .3
 
 
 # Random Sampling Testing
@@ -451,10 +451,10 @@ tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.conc
     buffer_size=7000).batch(batch_size)
 
 # Train the data augmentation, randomly resampled model, with class weights - Heavy
-model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=15, validation_data=test_dataset,
-          shuffle=True, class_weight={0: .35, 1: 0.65})
+model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+          shuffle=True, class_weight={0: .3, 1: 0.7})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
 
 '''###Save Model'''
 # Save entire model to a single file
