@@ -602,19 +602,6 @@ print(f"Tuned Augmented & Resampled Model with Weights 7 - Recall: {recall}, Acc
 model.save('fraud_model_single_file.h7')
 
 
-'''###Save Model'''
-# Save entire model to a single file
-model.save('fraud_model_single_file.h5')
-
-# Load entire model from a single file
-loaded_single_file_model = tf.keras.models.load_model('fraud_model_single_file.h5')
-
-# Save model in SavedModel format
-tf.saved_model.save(model, 'fraud_model_SMFormat')
-
-# Load model from SavedModel format
-loaded_SM_model = tf.saved_model.load('fraud_model_SMFormat')
-
 """### Evaluation"""
 # Define a function to get predicted classes from probabilities based on a threshold
 
