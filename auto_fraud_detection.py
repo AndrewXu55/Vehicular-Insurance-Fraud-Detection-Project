@@ -48,7 +48,7 @@ image_test_non_fraud_directory = image_directory + '/test/Non-Fraud'
 # Iterate over files in directory
 def get_imgs(directory):
     img_list = []
-    for file_name in os.listdir(directory):
+    for file_name in os.listdir(directory)[:1250]:
         if file_name.endswith('.jpg'):
             # Get full path
             file_path = os.path.join(directory, file_name)
@@ -452,7 +452,7 @@ tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.conc
 
 # Train the data augmentation, randomly resampled model, with class weights - Heavy
 model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=15, validation_data=test_dataset,
-          shuffle=True, class_weight={0: .1, 1: 0.9})
+          shuffle=True, class_weight={0: .25, 1: 0.75})
 recall, accuracy = evaluate_model(model, test_dataset)
 print(f"Augmented & Resampled Heavy Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
 
