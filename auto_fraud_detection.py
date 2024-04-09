@@ -434,30 +434,30 @@ print(f"Augmented & Resampled Light Model with Weights - Recall: {recall}, Accur
 '''### Tune Final Dataset + Model'''
 
 # Dataset alteration hyperparameters
-under_proportion = .7
-over_proportion = .3
-augment_proportion = .3
+# under_proportion = .7
+# over_proportion = .3
+# augment_proportion = .3
 
-# Random Sampling Testing
-tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
-tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
-tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
-tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+# # Random Sampling Testing
+# tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+# tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+# tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+# tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
 
-# Data augmentation on randomly resampled dataset
-tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
-tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
-    buffer_size=7000).batch(batch_size)
+# # Data augmentation on randomly resampled dataset
+# tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+# tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+#     buffer_size=7000).batch(batch_size)
 
-# Train the data augmentation, randomly resampled model, with class weights - Heavy
-model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
-          shuffle=True, class_weight={0: .3, 1: 0.7})
-recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+# # Train the data augmentation, randomly resampled model, with class weights - Heavy
+# model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+#           shuffle=True, class_weight={0: .3, 1: 0.7})
+# recall, accuracy = evaluate_model(model, test_dataset)
+# print(f"Tuned Augmented & Resampled Model with Weights 3 - Recall: {recall}, Accuracy: {accuracy}")
 
-'''###Save Model'''
-# Save entire model to a single file
-model.save('fraud_model_single_file1.h5')
+# '''###Save Model'''
+# # Save entire model to a single file
+# model.save('fraud_model_single_file1.h5')
 
 # Dataset alteration hyperparameters
 under_proportion = .7
@@ -479,37 +479,51 @@ tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.conc
 model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
           shuffle=True, class_weight={0: .3, 1: 0.7})
 recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+print(f"Tuned Augmented & Resampled Model with Weights 2 - Recall: {recall}, Accuracy: {accuracy}")
 
 '''###Save Model'''
 # Save entire model to a single file
 model.save('fraud_model_single_file2.h5')
 
+model = tf.keras.models.load_model('fraud_model_single_file2.h5')
+
+# Step 2: Convert the model to TensorFlow Lite format
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+
+# Step 3: Save the TensorFlow Lite model to disk
+with open('fraud_model.tflite', 'wb') as f:
+    f.write(tflite_model)
+
+print("Model has been converted and saved to 'fraud_model.tflite'")
+
+
+
 # Dataset alteration hyperparameters
-under_proportion = .7
-over_proportion = .3
-augment_proportion = .3
+# under_proportion = .7
+# over_proportion = .3
+# augment_proportion = .3
 
-# Random Sampling Testing
-tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
-tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
-tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
-tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
+# # Random Sampling Testing
+# tune_undersampled_non_fraud = randomly_undersample(train_not_fraud_images, under_proportion)
+# tune_oversampled_fraud = randomly_oversample(train_fraud_images, over_proportion)
+# tune_undersampled_non_fraud_ds = to_ds(tune_undersampled_non_fraud, 0)
+# tune_oversampled_fraud_ds = to_ds(tune_oversampled_fraud, 1)
 
-# Data augmentation on randomly resampled dataset
-tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
-tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
-    buffer_size=7000).batch(batch_size)
+# # Data augmentation on randomly resampled dataset
+# tune_augmented_resampled_train_fraud_ds = augment_data(oversampled_fraud_ds, augment_proportion)
+# tune_augmented_resampled_train_ds = tune_augmented_resampled_train_fraud_ds.concatenate(tune_undersampled_non_fraud_ds).shuffle(
+#     buffer_size=7000).batch(batch_size)
 
 # Train the data augmentation, randomly resampled model, with class weights - Heavy
-model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
-          shuffle=True, class_weight={0: .3, 1: 0.7})
-recall, accuracy = evaluate_model(model, test_dataset)
-print(f"Tuned Augmented & Resampled Model with Weights - Recall: {recall}, Accuracy: {accuracy}")
+# model.fit(tune_augmented_resampled_train_ds, batch_size=batch_size, epochs=16, validation_data=test_dataset,
+#           shuffle=True, class_weight={0: .3, 1: 0.7})
+# recall, accuracy = evaluate_model(model, test_dataset)
+# print(f"Tuned Augmented & Resampled Model with Weights 1 - Recall: {recall}, Accuracy: {accuracy}")
 
-'''###Save Model'''
-# Save entire model to a single file
-model.save('fraud_model_single_file3.h5')
+# '''###Save Model'''
+# # Save entire model to a single file
+# model.save('fraud_model_single_file3.h5')
 
 """### Evaluation"""
 # Define a function to get predicted classes from probabilities based on a threshold
