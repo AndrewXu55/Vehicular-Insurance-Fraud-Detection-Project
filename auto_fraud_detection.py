@@ -179,4 +179,11 @@ oversampled_fraud_ds = to_dataset(oversampled_fraud, 1)
 augmented_resampled_train_ds = augment_data(oversampled_fraud_ds, 0.5).concatenate(undersampled_non_fraud_ds).shuffle(buffer_size=7000).batch(batch_size)
 
 # Train on preprocessed datasets
-# model.fit(augmented_resampled_train_ds, epochs=10, validation_data=test_dataset, verbose=1)
+model.fit(augmented_resampled_train_ds, epochs=10, validation_data=test_dataset, verbose=1)
+
+# Evaluate model
+recall, accuracy = evaluate_model(model, test_dataset)
+print(f"Tuned Augmented & Resampled Model with Weights 1 - Recall: {recall}, Accuracy: {accuracy}")
+
+# Save entire model to a single file
+model.save('fraud_model_single_file3.h5')
