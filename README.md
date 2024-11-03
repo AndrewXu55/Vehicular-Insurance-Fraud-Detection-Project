@@ -15,3 +15,9 @@
 - **index.html**: The HTML template for the web interface, where users can upload files and view predictions.
 - **styles.css**: A stylesheet for styling the web application interface.
 - **requirements.txt**: A file listing all required Python libraries and their versions.
+
+## Contributors
+ - Samuel Kinstlinger
+ - Rithvik Bonagiri
+ - Andrew Xu
+ - Bari Vadaria
