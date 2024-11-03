@@ -17,7 +17,7 @@
 - **requirements.txt**: A file listing all required Python libraries and their versions.
 
 ## Contributors
- - [Samuel Kinstlinger](https://deepmind.google/about/student-researcher-program/)
- - Rithvik Bonagiri
- - Andrew Xu
- - Bari Vadaria
+ - [Samuel Kinstlinger](https://github.com/sam-kinstlinger)
+ - [Rithvik Bonagiri](https://github.com/RithvikBona)
+ - [Andrew Xu](https://github.com/AndrewXu55)
+ - [Bari Vadaria](https://github.com/barivadaria)
